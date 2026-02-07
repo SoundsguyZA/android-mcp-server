@@ -1,0 +1,400 @@
+================================================================================
+  ANDROID MCP SERVER - FRESH START GUIDE
+  For Huawei Pura80 Pro with Termux
+================================================================================
+
+SAVE THIS FILE: Copy to ~/storage/shared/Documents/ and open in any text editor
+
+================================================================================
+STEP 1: COMPLETE CLEANUP
+================================================================================
+
+Kill any running processes:
+  killall node 2>/dev/null
+  killall npm 2>/dev/null
+
+Remove the old project:
+  cd ~
+  rm -rf ~/android-mcp-server
+
+Remove broken bun if it exists:
+  rm -rf ~/.bun
+
+Clean .bashrc:
+  echo "" > ~/.bashrc
+
+Clean npm cache:
+  rm -rf ~/.npm
+
+Verify cleanup:
+  ls -la ~
+
+You should NOT see android-mcp-server folder anymore.
+
+================================================================================
+STEP 2: UPDATE AND INSTALL ESSENTIALS
+================================================================================
+
+Update Termux packages:
+  pkg update && pkg upgrade
+
+Install essential tools:
+  pkg install git curl nano nodejs
+
+Verify installations:
+  git --version
+  node --version
+  npm --version
+
+Expected Output:
+  git: git version 2.x.x
+  node: v20.x.x or similar
+  npm: 10.x.x or similar
+
+Press Y if asked to confirm.
+
+================================================================================
+STEP 3: ENABLE STORAGE ACCESS
+================================================================================
+
+Run storage setup:
+  termux-setup-storage
+
+Tap "Allow" on the popup.
+
+================================================================================
+STEP 4: CLONE YOUR REPOSITORY
+================================================================================
+
+Go to home directory:
+  cd ~
+
+Clone from GitHub:
+  git clone http://github.com/SoundsguyZA/android-mcp-server.git
+
+Go into the project:
+  cd ~/android-mcp-server
+
+Verify you're in the right place:
+  pwd
+
+Expected Output: /data/data/com.termux/files/home/android-mcp-server
+
+Check what's in the project:
+  ls -la
+
+You should see:
+  - package.json
+  - src/ folder
+  - mini-services/ folder
+  - prisma/ folder
+  - Other files
+
+================================================================================
+STEP 5: INSTALL PROJECT DEPENDENCIES
+================================================================================
+
+Make sure you're in project directory:
+  cd ~/android-mcp-server
+
+Install main dependencies:
+  npm install
+
+This will take 3-5 minutes. Be patient!
+
+Expected Output:
+  added 826 packages in 45s
+  found 0 vulnerabilities
+
+================================================================================
+STEP 6: INSTALL MCP SERVER DEPENDENCIES
+================================================================================
+
+Go to MCP server directory:
+  cd ~/android-mcp-server/mini-services/mcp-server
+
+Install MCP server dependencies:
+  npm install
+
+Expected Output:
+  added 22 packages in 12s
+
+================================================================================
+STEP 7: VERIFY INSTALLATION
+================================================================================
+
+Go back to project root:
+  cd ~/android-mcp-server
+
+Check that node_modules exists:
+  ls node_modules | head -20
+
+Check MCP server has dependencies:
+  ls mini-services/mcp-server/node_modules
+
+If you see lists of packages, everything is installed!
+
+================================================================================
+STEP 8: BUILD THE NEXT.JS PROJECT
+================================================================================
+
+We use production build to avoid Turbopack issues on ARM64.
+
+Make sure you're in project root:
+  cd ~/android-mcp-server
+
+Clean any existing build:
+  rm -rf .next
+
+Build the project:
+  npm run build
+
+This will take 3-5 minutes. Wait for completion.
+
+Expected Output:
+  ✓ Compiled successfully
+
+IF YOU SEE ANY ERRORS, STOP and tell me what they say.
+
+================================================================================
+STEP 9: START MCP SERVER (TERMINAL 1)
+================================================================================
+
+You'll need TWO Termux sessions.
+
+In Terminal 1:
+  cd ~/android-mcp-server/mini-services/mcp-server
+  node index.ts
+
+Expected Output:
+============================================================
+🚀 Android MCP Server Started!
+============================================================
+📡 HTTP Server: http://localhost:3001
+🔌 WebSocket: ws://localhost:3001
+🛠️  Tools Available: 14
+📱 Platform: android arm64
+🏠 Allowed Paths: /data/data/com.termux/files/home, /tmp
+============================================================
+
+✅ MCP Server is RUNNING! Keep this terminal open!
+
+================================================================================
+STEP 10: START NEXT.JS DASHBOARD (TERMINAL 2)
+================================================================================
+
+Open a NEW Termux session:
+- Tap the screen
+- Tap "NEW SESSION" button (usually bottom left)
+
+In the NEW Terminal 2:
+  cd ~/android-mcp-server
+  npm start
+
+Wait 10-20 seconds. The server should start without errors.
+
+If you see "Ready" or similar, the dashboard is RUNNING!
+
+================================================================================
+STEP 11: ACCESS THE DASHBOARD
+================================================================================
+
+On your Huawei Pura80 Pro:
+
+1. Open Chrome browser
+2. Type in address bar: http://localhost:3000
+3. Press Enter
+
+What You Should See:
+  ✓ Beautiful Android MCP Dashboard
+  ✓ Green "Connected" status at top right
+  ✓ Four status cards showing:
+    - Platform: android arm64
+    - Tools: 14
+    - Home Directory: /data/data/com.termux/files/home
+    - Server Status: Active (green)
+  ✓ Tabs: Tools, Terminal, Filesystem, System
+
+🎉 SUCCESS! Everything is working!
+
+================================================================================
+STEP 12: TEST YOUR SETUP
+================================================================================
+
+Test 1: List Files
+  1. Click the "Tools" tab
+  2. Click on filesystem_list_directory
+  3. Click "Execute Tool" button
+  4. You should see: A list of files and folders
+
+Test 2: Run Terminal Command
+  1. Click the "Terminal" tab
+  2. Type: ls -la
+  3. Click "Run" button
+  4. You should see: Detailed file listing with streaming output
+
+Test 3: Check System Info
+  1. Click the "System" tab
+  2. Click "Get Memory Info" button
+  3. You should see: Your 16GB RAM usage details
+
+================================================================================
+SUCCESS CHECKLIST
+================================================================================
+
+When you're done, verify:
+  ✓ MCP server running in Terminal 1 with no errors
+  ✓ Next.js dashboard running in Terminal 2 with no errors
+  ✓ Can access http://localhost:3000 in Chrome
+  ✓ Dashboard shows green "Connected" status
+  ✓ Can list files via Tools tab
+  ✓ Can run commands via Terminal tab
+  ✓ System info displays correctly
+
+================================================================================
+HOW TO START IN THE FUTURE
+================================================================================
+
+Start MCP Server (Terminal 1):
+  cd ~/android-mcp-server/mini-services/mcp-server
+  node index.ts
+
+Start Dashboard (Terminal 2 - NEW SESSION):
+  cd ~/android-mcp-server
+  npm start
+
+Stop Everything:
+  Press Ctrl+C in both terminals
+  Or: killall node
+
+================================================================================
+UPDATE PROJECT LATER
+================================================================================
+
+Stop servers first (Ctrl+C in both terminals)
+
+Go to project:
+  cd ~/android-mcp-server
+
+Pull latest changes:
+  git pull
+
+Reinstall dependencies (if needed):
+  npm install
+  cd mini-services/mcp-server && npm install
+  cd ~/android-mcp-server
+
+Rebuild:
+  rm -rf .next
+  npm run build
+
+Start servers again
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+"Command not found: node"
+  pkg install nodejs
+
+"Cannot find module"
+  cd ~/android-mcp-server
+  npm install
+  cd mini-services/mcp-server && npm install
+
+"Port already in use"
+  killall node
+  # Try again
+
+"Build failed"
+  cd ~/android-mcp-server
+  rm -rf .next
+  npm run build
+
+"Dashboard shows 'Not Connected'"
+  - Make sure Terminal 1 is still running
+  - Check MCP server has no errors
+  - Restart MCP server in Terminal 1
+
+================================================================================
+ABOUT THOSE OTHER FILES
+================================================================================
+
+The files you see like:
+  - kali-fs, ubuntu-fs (Linux distros)
+  - phoneinfoga (OSINT tool)
+  - .py scripts (various tools)
+  - Other folders
+
+These are NOT related to the Android MCP Server project.
+They are other tools you've installed in Termux.
+You can safely ignore them - they won't affect our project.
+
+Our project is ONLY in the android-mcp-server folder.
+
+================================================================================
+QUICK REFERENCE - ALL COMMANDS
+================================================================================
+
+# === STEP 1: Cleanup ===
+killall node 2>/dev/null
+cd ~
+rm -rf ~/android-mcp-server
+rm -rf ~/.bun
+echo "" > ~/.bashrc
+rm -rf ~/.npm
+
+# === STEP 2: Install Essentials ===
+pkg update && pkg upgrade
+pkg install git curl nano nodejs
+git --version
+node --version
+npm --version
+
+# === STEP 3: Storage ===
+termux-setup-storage
+
+# === STEP 4: Clone ===
+cd ~
+git clone http://github.com/SoundsguyZA/android-mcp-server.git
+cd ~/android-mcp-server
+pwd
+ls -la
+
+# === STEP 5: Install Dependencies ===
+cd ~/android-mcp-server
+npm install
+
+# === STEP 6: MCP Server Dependencies ===
+cd ~/android-mcp-server/mini-services/mcp-server
+npm install
+
+# === STEP 7: Verify ===
+cd ~/android-mcp-server
+ls node_modules | head -20
+ls mini-services/mcp-server/node_modules
+
+# === STEP 8: Build ===
+cd ~/android-mcp-server
+rm -rf .next
+npm run build
+
+# === STEP 9: Start MCP Server (Terminal 1) ===
+cd ~/android-mcp-server/mini-services/mcp-server
+node index.ts
+
+# === STEP 10: Start Dashboard (Terminal 2 - NEW SESSION) ===
+cd ~/android-mcp-server
+npm start
+
+# === STEP 11: Access ===
+# Open Chrome: http://localhost:3000
+
+================================================================================
+END OF GUIDE
+================================================================================
+
+Save this file to your phone for offline reference!
+
+Good luck! Your Huawei Pura80 Pro is about to become an AI-powered
+development platform!
